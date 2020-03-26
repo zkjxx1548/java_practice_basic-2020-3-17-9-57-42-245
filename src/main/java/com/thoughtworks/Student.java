@@ -17,7 +17,7 @@ public class Student {
   }
 
   public Student(String id, String name, String gender, int admissionYear, String birthday,
-      String classId) {
+          String classId) {
     this.id = id;
     this.name = name;
     this.gender = gender;
