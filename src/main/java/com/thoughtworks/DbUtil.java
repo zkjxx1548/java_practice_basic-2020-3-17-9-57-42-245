@@ -1,15 +1,14 @@
 package com.thoughtworks;
 
 import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.DriverManager;
+        import java.sql.SQLException;
+        import java.sql.DriverManager;
 
 public class DbUtil {
     public static final String URL = "jdbc:mysql://localhost:3306/test?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=Hongkong";
     public static final String USER = "root";
     public static final String PASSWORD = "zkjxx950626";
     private static Connection conn = null;
-
 
     static{
         try {

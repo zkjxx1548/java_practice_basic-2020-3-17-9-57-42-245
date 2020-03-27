@@ -24,7 +24,7 @@ public class StudentRepository {
     PreparedStatement ptmt = conn.prepareStatement(sql);
     addData(ptmt, student);
 
-    ptmt.execute();
+    ptmt.executeLargeUpdate();
   }
 
   public List<Student> query() throws SQLException {
@@ -38,9 +38,11 @@ public class StudentRepository {
   public List<Student> queryByClassId(String classId) throws SQLException {
     // TODO:
     Connection conn = DbUtil.getConnection();
-    Statement stmt = conn.createStatement();
-    ResultSet rs = stmt.executeQuery("SELECT id, name, sex, admission_year, birthday, classroom FROM student " +
-            "WHERE classroom = " + "'" +classId + "'"+ " ORDER BY id DESC");
+    String sql = "SELECT id, name, sex, admission_year, birthday, classroom FROM student " +
+            "WHERE classroom = ? ORDER BY id DESC";
+    PreparedStatement ptmt = conn.prepareStatement(sql);
+    ptmt.setString(1, classId);
+    ResultSet rs = ptmt.executeQuery();
     return addToListFromResultSet(rs);
   }
 
@@ -52,7 +54,7 @@ public class StudentRepository {
     addData(preparedStatement, student);
     preparedStatement.setString(7, id);
 
-    preparedStatement.execute();
+    preparedStatement.executeUpdate();
   }
 
   public void delete(String id) throws SQLException {
@@ -62,7 +64,7 @@ public class StudentRepository {
     PreparedStatement preparedStatement = conn.prepareStatement(sql);
 
     preparedStatement.setString(1, id);
-    preparedStatement.execute();
+    preparedStatement.executeUpdate();
   }
 
   public List<Student> addToListFromResultSet(ResultSet rs) throws SQLException {
