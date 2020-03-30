@@ -22,25 +22,31 @@ public class StudentRepository {
       addData(ptmt, student);
 
       ptmt.executeLargeUpdate();
+      ptmt.close();
+      conn.close();
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
+
   }
 
   public List<Student> query(){
     // TODO:
     Connection conn;
-    Statement stmt;
+    PreparedStatement ptmt;
     ResultSet rs;
+    List<Student> res;
     try {
       conn = DbUtil.getConnection();
-      stmt = conn.createStatement();
-      rs = stmt.executeQuery("SELECT id, name, sex, admission_year, birthday, classroom FROM student");
-
+      String sql = "SELECT id, name, sex, admission_year, birthday, classroom FROM student";
+      ptmt = conn.prepareStatement(sql);
+      rs = ptmt.executeQuery();
+      res = addToListFromResultSet(rs);
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
-    return addToListFromResultSet(rs);
+    closeJDBC(rs, ptmt, conn);
+    return res;
   }
 
   public List<Student> queryByClassId(String classId) {
@@ -49,15 +55,19 @@ public class StudentRepository {
             "WHERE classroom = ? ORDER BY id DESC";
     Connection conn;
     PreparedStatement ptmt;
+    ResultSet rs;
+    List<Student> res;
     try {
       conn = DbUtil.getConnection();
       ptmt = conn.prepareStatement(sql);
       ptmt.setString(1, classId);
-      ResultSet rs = ptmt.executeQuery();
-      return addToListFromResultSet(rs);
+      rs = ptmt.executeQuery();
+      res = addToListFromResultSet(rs);
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
+    closeJDBC(rs, ptmt, conn);
+    return res;
   }
 
   public void update(String id, Student student) {
@@ -72,6 +82,8 @@ public class StudentRepository {
       ptmt.setString(7, id);
 
       ptmt.executeUpdate();
+      ptmt.close();
+      conn.close();
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
@@ -89,6 +101,8 @@ public class StudentRepository {
 
       ptmt.setString(1, id);
       ptmt.executeUpdate();
+      ptmt.close();
+      conn.close();
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
@@ -125,6 +139,24 @@ public class StudentRepository {
       preparedStatement.setString(6, student.getClassId());
     } catch (SQLException e) {
       throw new RuntimeException(e);
+    }
+  }
+
+  public void closeJDBC(ResultSet rs, PreparedStatement ps, Connection conn) {
+    try{
+      rs.close();
+    }catch(SQLException e){
+      e.printStackTrace();
+    }
+    try {
+      ps.close();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    try {
+      conn.close();
+    } catch (SQLException e) {
+      e.printStackTrace();
     }
   }
 }
